@@ -1,0 +1,14 @@
+# Local build output
+build/
+*.bin
+*.elf
+*.map
+*.o
+
+# Optional embedded tooling
+.pio/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
