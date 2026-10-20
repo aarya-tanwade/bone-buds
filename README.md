@@ -23,6 +23,7 @@ The existing sketch runs at **16 kHz**, reads the microphone's left channel, con
 
 ## Run the firmware
 
+
 1. Install Arduino IDE and the ESP32 board package that supports `ESP_I2S.h` (Arduino-ESP32 3.x).
 2. Open [`firmware/prototype1/prototype1.ino`](firmware/prototype1/prototype1.ino).
 3. Select your ESP32-S3 board and serial port, then upload.
