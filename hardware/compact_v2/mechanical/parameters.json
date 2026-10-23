@@ -1,0 +1,35 @@
+{
+  "controller_mm": [
+    50,
+    38,
+    1
+  ],
+  "audio_mm": [
+    18,
+    24,
+    1
+  ],
+  "crown_housing_mm": [
+    58,
+    46,
+    20
+  ],
+  "pod_housing_mm": [
+    23,
+    34,
+    44
+  ],
+  "battery_envelope_mm": [
+    45,
+    32,
+    6
+  ],
+  "battery_target_mAh": 500,
+  "transducer_envelope_mm": [
+    25,
+    8
+  ],
+  "slider_travel_mm": 20,
+  "headband_inner_radius_mm": 82,
+  "wall_mm": 1.8
+}

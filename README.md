@@ -68,3 +68,8 @@ Follow the [development log](docs/progress.md) for changes and the [roadmap](doc
 ## Disclaimer
 
 This is an engineering research prototype, **not** a certified hearing aid or a clinical audiometry device.
+
+## Hardware design
+
+Current Rev B hardware and CAD: [hardware/README.md](hardware/README.md).
+

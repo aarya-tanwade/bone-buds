@@ -12,3 +12,19 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Bone Buds: machine-generated / local-only files
+*.kicad_prl
+*.lck
+*.dsn
+*.ses
+*.net
+*.log
+*.pyc
+__pycache__/
+.history/
+.mcp-backups/
+*.lnk
+# Do not publish provisional manufacturing exports before fabrication review
+hardware/**/exports/fabrication/
+

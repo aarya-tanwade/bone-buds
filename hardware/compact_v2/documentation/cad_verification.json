@@ -1,0 +1,21 @@
+{
+  "all_shapes_valid": true,
+  "objects": 51,
+  "controller_shell_intersection_mm3": 0.0,
+  "controller_battery_intersection_mm3": 0.0,
+  "pods": {
+    "right": {
+      "pcb_shell_mm3": 0.0,
+      "pcb_transducer_mm3": 0.0,
+      "pcb_retainer_mm3": 0.0,
+      "mic_duct_pcb_mm3": 6.3757257334007935
+    },
+    "left": {
+      "pcb_shell_mm3": 0.0,
+      "pcb_transducer_mm3": 0.0,
+      "pcb_retainer_mm3": 0.0,
+      "mic_duct_pcb_mm3": 6.375725733400797
+    }
+  },
+  "status": "EVT geometry only; no wear, pressure, RF, electrical, drop, thermal or acoustic testing performed"
+}

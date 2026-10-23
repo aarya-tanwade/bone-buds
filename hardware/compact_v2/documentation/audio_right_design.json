@@ -1,0 +1,359 @@
+{
+  "name": "audio_right",
+  "width": 18,
+  "height": 24,
+  "holes": [
+    [
+      52,
+      57
+    ],
+    [
+      66,
+      72
+    ]
+  ],
+  "parts": [
+    {
+      "ref": "J1",
+      "value": "JST SH 10P",
+      "sym": "Connector_Generic:Conn_01x10",
+      "fp": "Connector_JST:JST_SH_BM10B-SRSS-TB_1x10-1MP_P1.00mm_Vertical",
+      "nets": {
+        "1": "SYS_SW",
+        "2": "GND",
+        "3": "3V3",
+        "4": "AMP_BCLK",
+        "5": "AMP_WS",
+        "6": "AMP_DIN",
+        "7": "MIC_BCLK",
+        "8": "MIC_WS",
+        "9": "MIC_SD",
+        "10": "AUDIO_EN"
+      },
+      "xy": [
+        59,
+        53
+      ],
+      "rot": 180,
+      "side": "F",
+      "uuid": "5ec0dc45-944b-4f4e-9d7b-fdf79116ec4c"
+    },
+    {
+      "ref": "U1",
+      "value": "MAX98357A",
+      "sym": "Audio:MAX98357A",
+      "fp": "Package_DFN_QFN:TQFN-16-1EP_3x3mm_P0.5mm_EP1.23x1.23mm",
+      "nets": {
+        "1": "AMP_DIN",
+        "2": "GAIN",
+        "3": "GND",
+        "4": "SD_MODE",
+        "7": "SYS_SW",
+        "8": "SYS_SW",
+        "9": "OUT_P",
+        "10": "OUT_N",
+        "11": "GND",
+        "14": "AMP_WS",
+        "15": "GND",
+        "16": "AMP_BCLK",
+        "17": "GND"
+      },
+      "xy": [
+        57,
+        61
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "05633da1-1562-4a76-aa09-e5ea578e92a6"
+    },
+    {
+      "ref": "U2",
+      "value": "CMM-4030D-261-I2S-TR",
+      "sym": "BoneBuds:CMM4030",
+      "fp": "BoneBuds:CMM4030",
+      "nets": {
+        "1": "GND",
+        "3": "MIC_WS",
+        "4": "3V3",
+        "5": "3V3",
+        "6": "MIC_BCLK",
+        "7": "MIC_SD",
+        "8": "3V3"
+      },
+      "xy": [
+        64,
+        67
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "bb0a1dc0-6b04-4f04-87a1-63c458d1675d"
+    },
+    {
+      "ref": "R1",
+      "value": "210k 1%",
+      "sym": "Device:R",
+      "fp": "Resistor_SMD:R_0402_1005Metric",
+      "nets": {
+        "1": "AUDIO_EN",
+        "2": "SD_MODE"
+      },
+      "xy": [
+        53.5,
+        61
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "b3969b77-1445-44c9-8cd7-082ba78fe046"
+    },
+    {
+      "ref": "R2",
+      "value": "100k / 3dB",
+      "sym": "Device:R",
+      "fp": "Resistor_SMD:R_0402_1005Metric",
+      "nets": {
+        "1": "SYS_SW",
+        "2": "GAIN"
+      },
+      "xy": [
+        53.5,
+        63
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "eb535d34-93e5-4f0b-9cb3-5c8ba3bdee9a"
+    },
+    {
+      "ref": "C1",
+      "value": "100n",
+      "sym": "Device:C",
+      "fp": "Capacitor_SMD:C_0402_1005Metric",
+      "nets": {
+        "1": "SYS_SW",
+        "2": "GND"
+      },
+      "xy": [
+        59,
+        58.5
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "560c7d29-d3d2-4344-949c-0cb3c3c9ca8b"
+    },
+    {
+      "ref": "C2",
+      "value": "22u 10V",
+      "sym": "Device:C",
+      "fp": "Capacitor_SMD:C_0805_2012Metric",
+      "nets": {
+        "1": "SYS_SW",
+        "2": "GND"
+      },
+      "xy": [
+        62,
+        59
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "93589825-7353-45bc-b6e8-2e841fa70759"
+    },
+    {
+      "ref": "C3",
+      "value": "100n",
+      "sym": "Device:C",
+      "fp": "Capacitor_SMD:C_0402_1005Metric",
+      "nets": {
+        "1": "3V3",
+        "2": "GND"
+      },
+      "xy": [
+        61,
+        65
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "b226048c-4031-49ac-9e8f-638bd3d211c0"
+    },
+    {
+      "ref": "C4",
+      "value": "10u",
+      "sym": "Device:C",
+      "fp": "Capacitor_SMD:C_0603_1608Metric",
+      "nets": {
+        "1": "3V3",
+        "2": "GND"
+      },
+      "xy": [
+        61,
+        67
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "9de22725-2f25-4f87-a0b6-4c47dda85fd0"
+    },
+    {
+      "ref": "FB1",
+      "value": "BLM18PG121SN1",
+      "sym": "Device:FerriteBead",
+      "fp": "Inductor_SMD:L_0603_1608Metric",
+      "nets": {
+        "1": "OUT_P",
+        "2": "SPK_P"
+      },
+      "xy": [
+        55,
+        65
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "de921aad-9f18-4ccf-a9fe-764f837887f5"
+    },
+    {
+      "ref": "FB2",
+      "value": "BLM18PG121SN1",
+      "sym": "Device:FerriteBead",
+      "fp": "Inductor_SMD:L_0603_1608Metric",
+      "nets": {
+        "1": "OUT_N",
+        "2": "SPK_N"
+      },
+      "xy": [
+        57.5,
+        65
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "e9baecd6-0877-4e33-845f-35252f43acd7"
+    },
+    {
+      "ref": "C5",
+      "value": "1n C0G",
+      "sym": "Device:C",
+      "fp": "Capacitor_SMD:C_0402_1005Metric",
+      "nets": {
+        "1": "SPK_P",
+        "2": "GND"
+      },
+      "xy": [
+        53,
+        67
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "e182bc08-3d96-400f-931f-d7d3377d7628"
+    },
+    {
+      "ref": "C6",
+      "value": "1n C0G",
+      "sym": "Device:C",
+      "fp": "Capacitor_SMD:C_0402_1005Metric",
+      "nets": {
+        "1": "SPK_N",
+        "2": "GND"
+      },
+      "xy": [
+        56,
+        67
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "a27f01c6-d3fc-445e-9dc7-1e2f47353759"
+    },
+    {
+      "ref": "J2",
+      "value": "JST SH 2P",
+      "sym": "Connector_Generic:Conn_01x02",
+      "fp": "Connector_JST:JST_SH_BM02B-SRSS-TB_1x02-1MP_P1.00mm_Vertical",
+      "nets": {
+        "1": "SPK_P",
+        "2": "SPK_N"
+      },
+      "xy": [
+        55,
+        70
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "ddbe381e-208d-4195-95e4-446408aaaf72"
+    },
+    {
+      "ref": "TP1",
+      "value": "GND",
+      "sym": "Connector:TestPoint",
+      "fp": "TestPoint:TestPoint_Pad_D1.0mm",
+      "nets": {
+        "1": "GND"
+      },
+      "xy": [
+        65,
+        59
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "a4ce2174-f99d-487f-a1bc-f694a39dcaeb"
+    },
+    {
+      "ref": "TP2",
+      "value": "SD_MODE",
+      "sym": "Connector:TestPoint",
+      "fp": "TestPoint:TestPoint_Pad_D1.0mm",
+      "nets": {
+        "1": "SD_MODE"
+      },
+      "xy": [
+        65,
+        61
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "197e6d48-cfe3-4faf-86b5-46650733d3be"
+    },
+    {
+      "ref": "#FLG16",
+      "value": "PWR_FLAG",
+      "sym": "power:PWR_FLAG",
+      "fp": "",
+      "nets": {
+        "1": "GND"
+      },
+      "xy": [
+        0,
+        0
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "9ef09444-5171-4da5-8df7-e8a2ddcc9e97"
+    },
+    {
+      "ref": "#FLG17",
+      "value": "PWR_FLAG",
+      "sym": "power:PWR_FLAG",
+      "fp": "",
+      "nets": {
+        "1": "SYS_SW"
+      },
+      "xy": [
+        0,
+        0
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "5c3f58ad-3bc2-499e-a08e-b474bfd071cd"
+    },
+    {
+      "ref": "#FLG18",
+      "value": "PWR_FLAG",
+      "sym": "power:PWR_FLAG",
+      "fp": "",
+      "nets": {
+        "1": "3V3"
+      },
+      "xy": [
+        0,
+        0
+      ],
+      "rot": 0,
+      "side": "F",
+      "uuid": "064166d1-b5f4-44ab-9f02-ad09c80a638b"
+    }
+  ]
+}
