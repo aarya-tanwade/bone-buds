@@ -26,5 +26,5 @@ __pycache__/
 .mcp-backups/
 *.lnk
 # Do not publish provisional manufacturing exports before fabrication review
-hardware/**/exports/fabrication/
+cad/**/exports/fabrication/
 
