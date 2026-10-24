@@ -4,8 +4,6 @@
 
 ## Source and environment
 
-Entry point: [T01_wroom_bt_a2dp.ino](T01_wroom_bt_a2dp.ino). Copied unchanged from `code/prototype1/prototype1.ino`; the project owner confirmed this source on 2026-10-25. Original retained.
-
 Use the original ESP32-WROOM-32, 38-pin development board. Select **ESP32 Dev Module**, not ESP32-S3. Exact original upload settings were not recorded.
 
 | Dependency | Locally installed at documentation audit | Historical T01 version |
