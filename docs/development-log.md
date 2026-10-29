@@ -1,8 +1,8 @@
 # Development Log
 
-**BoneBuds Alpha 0.1** | Baseline audio testing
+**BoneBuds / OSSIS** | Baseline audio and OTA tests
 
-A dated record of our bench tests, issues and changes. Only **T01 Bluetooth A2DP playback** has been confirmed end to end so far. Dates are based on the test history, not file timestamps.
+A dated record of bench tests, issues and changes. **T01 Bluetooth playback** and **T02 OTA** have been confirmed by the project owner. Dates below reflect recorded test history or owner confirmation, not GitHub commit dates.
 
 ## Earlier work | Dates not recorded
 
@@ -37,10 +37,16 @@ A dated record of our bench tests, issues and changes. Only **T01 Bluetooth A2DP
 - A slight audio-quality limitation remains.
 - **Outcome:** Current playback is encouraging, but long-duration temperature, output level and sound-quality measurements have not been completed.
 
-## Next checks
+## 29 October 2026 | T02: Wireless OTA
 
-- Repeat T01 at controlled source volume; record idle behaviour, playback duration and temperature.
-- Test dual-BCT output only after checking amplifier load and channel configuration.
-- Continue ESP32-S3 local-audio and DSP experiments. Record each verified test separately.
+- Added separate Bluetooth playback and Wi-Fi OTA modes.
+- Owner confirmed OTA testing was completed successfully.
+- **Outcome:** T02 marked passed; tested sketch and repeatability evidence still need to be archived.
+
+## Next / T03: Dual-BCT stereo
+
+- Obtain a replacement MAX98357A after damage to the second amplifier.
+- Test separate left/right outputs with two amplifiers and two transducers.
+- Continue ESP32-S3 and DSP experimentation; record each confirmed test individually.
 
 [All test results](test-results.md) · [Current test wiring](test-setup.md)
