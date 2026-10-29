@@ -1,40 +1,24 @@
-# OSSIS / Firmware
+# OSSIS / Code
 
-BoneBuds' first experimental bone-conduction audio system. Firmware tests are recorded separately from hardware concepts.
+Firmware and verified test sketches for our first BoneBuds prototype.
 
-## Test index
+> **Main firmware:** [main.ino](ossis/main/main.ino) holds our latest tested build, currently **T02 (Bluetooth + OTA)**.
 
-| ID | Experiment | Result | Source |
-| :-- | :-- | :-- | :-- |
-| **T01** | Bluetooth A2DP audio through one BCT | **Passed** · 24 Oct 2026 | [Verified sketch and setup](alpha-0.1/tests/T01_wroom_bt_a2dp/README.md) |
-| **T02** | Wireless firmware update (Wi-Fi OTA) | **Passed** · owner-confirmed, 29 Oct 2026 | Local tested sketch; not yet committed |
-| **T03** | Dual-BCT stereo playback | **Next** · awaiting replacement amplifier | Not started |
+| Source | Use |
+| --- | --- |
+| [main.ino](ossis/main/main.ino) | Current firmware |
+| [T01 sketch](ossis/tests/T01_wroom_bt_a2dp/T01_wroom_bt_a2dp.ino) · [Guide](ossis/tests/T01_wroom_bt_a2dp/README.md) | Preserved Bluetooth playback baseline; **PASSED** |
+| [T02 sketch](ossis/tests/T02_mono_ota/T02_mono_ota.ino) · [Guide](ossis/tests/T02_mono_ota/README.md) | Preserved wireless OTA experiment; **PASSED** |
 
-T01 is an unchanged archive of [`prototype1.ino`](prototype1/prototype1.ino). The `alpha-0.1/` folder name is retained for existing links; the prototype is now named **OSSIS**.
+## Upload the current firmware
 
-## Audio pipeline
+1. Use the ESP32-WROOM-32 and [bench wiring](../docs/test-setup.md#connections). Select **ESP32 Dev Module**.
+2. Install **esp32 by Espressif Systems**, **audio-tools** and **ESP32-A2DP** by Phil Schatzmann. WiFi, WebServer, ArduinoOTA and Preferences come with the ESP32 board package.
+3. Open [main.ino](ossis/main/main.ino). Select the USB serial port and an **OTA-capable partition scheme** with space for the compiled application.
+4. Verify and upload over USB for the first installation. Open Serial Monitor at **115200 baud**.
+5. Pair with **ESP32 Bone Speaker** within 20 seconds of Bluetooth startup, or use the [OTA procedure](ossis/tests/T02_mono_ota/README.md#ota-procedure).
 
-```mermaid
-flowchart LR
-    BT["Bluetooth A2DP"] --> HP["High-pass · 200 Hz"]
-    HP --> EQ["Peak · 2.8 kHz, +4 dB"]
-    EQ --> HS["High-shelf · 5 kHz, +2 dB"]
-    HS --> V["Volume"] --> I["ESP32 I²S"]
-    I --> AMP["MAX98357A"] --> BCT["One BCT"]
-```
+## Source notes
 
-**Configuration:** ESP32-WROOM-32 · 44.1 kHz / 16-bit · GPIO **26** BCLK, **25** WS, **22** DIN · software volume **1.0** · Bluetooth volume **127**.
-
-EQ settings are implemented in firmware; improved noise floor and frequency response have **not** been measured. The MAX98357A is mono, even when receiving two-channel I²S data.
-
-## T02 / OTA
-
-Added Wi-Fi access point, ArduinoOTA, local mode-control page and persistent boot-mode selection. Bluetooth playback and Wi-Fi OTA use **separate modes** with a restart when switching. OTA has **no inactivity timeout** while active.
-
-**Wireless updating tested successfully**, as confirmed by the project owner. Long-term reliability, repeated updates and battery consumption remain unmeasured. OTA credentials must not be committed publicly.
-
-## Next / T03
-
-Test two independent MAX98357A amplifiers and BCTs for left/right stereo after replacing the damaged amplifier. No T03 results are claimed yet.
-
-[Results](../docs/test-results.md) · [Setup](../docs/test-setup.md) · [Development log](../docs/development-log.md)
+- We preserve test sketches as references and use `main.ino` for current work. Main and T02 share executable logic but retain legacy `Test 01`/`Test 02` labels.
+- T01 and main/T02 share nominal DSP settings but use different peaking-filter coefficient helpers. See [T01 DSP settings](ossis/tests/T01_wroom_bt_a2dp/README.md).

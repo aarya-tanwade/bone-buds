@@ -1,7 +1,14 @@
-# Engineering records
+# OSSIS / Documentation
 
-- [Test setup](test-setup.md): current T01 wiring and precautions.
-- [Test results](test-results.md): the verified test index and observations.
-- [Development log](development-log.md): dated progress and unresolved issues.
+Our engineering records for OSSIS, the first BoneBuds prototype.
 
-Alpha 0.1 is baseline audio validation. Earlier design material and project proposals do not establish a completed Prototype 1 or verified electrical performance.
+| Document | Purpose |
+| --- | --- |
+| [Test setup](test-setup.md) | Shared bench wiring and firmware entry points |
+| [Test results](test-results.md) | Passed tests and the latest playback check |
+| [Development log](development-log.md) | Dated progress, earlier issues and changes |
+| [Firmware guide](../code/README.md) | Build, upload and test instructions |
+
+We have verified Bluetooth playback and wireless OTA. Our latest phone test uses two BCTs in parallel on one amplifier, with clear, loud audio. Independent stereo is next; CAD work continues in parallel.
+
+The [root README](../README.md) gives the full project overview. Early baseline records used the name Alpha 0.1; we now call the prototype OSSIS. Older PNG diagrams under `images/diagrams/` remain historical references; our current wiring table and firmware guides describe the working setup.

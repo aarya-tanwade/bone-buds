@@ -1,52 +1,30 @@
-# Development Log
+# OSSIS development log
 
-**BoneBuds / OSSIS** | Baseline audio and OTA tests
+Our bench-test milestones and current findings.
 
-A dated record of bench tests, issues and changes. **T01 Bluetooth playback** and **T02 OTA** have been confirmed by the project owner. Dates below reflect recorded test history or owner confirmation, not GitHub commit dates.
+```mermaid
+flowchart LR
+    t01["24 Oct<br/>T01: A2DP playback"] --> retest["25 Oct<br/>Playback check"]
+    retest --> current["29 Oct<br/>OTA + two-BCT phone test"]
+    current --> stereo["Next<br/>Independent stereo"]
+```
 
-## Earlier work | Dates not recorded
+## Bench history
 
-**ESP32-S3 audio bring-up**
+| Date | Work | Result |
+| --- | --- | --- |
+| Earlier | ESP32-S3 audio experiments | We tried I²S, tones, local playback and microphone loopback. A replacement USB cable fixed connectivity; end-to-end playback remained exploratory. |
+| 24 Oct | T01 on ESP32-WROOM-32, MAX98357A and one BCT | A2DP playback worked. Early noise, idle vibration and rapid heating led us to recheck the connections; corrected wiring produced cleaner audio. |
+| 25 Oct | Single-BCT listening check | No unwanted idle vibration or noticeable heating during the short check; a slight quality issue remained. |
+| 29 Oct | T02 wireless OTA | We uploaded firmware over Wi-Fi and returned to Bluetooth playback. |
+| 29 Oct | Phone source, two 8 Ω BCTs in parallel on one MAX98357A | Clear, loud audio without audible noise. Laptop streaming showed slight noise and intermittent breakup, so we chose the phone for repeat tests. |
 
-- Tried I²S output, tone generation, local audio playback and microphone-loopback code.
-- Faced USB detection and upload issues. Changing a faulty USB cable restored board connectivity.
-- Some audio tests produced no output. We checked GPIO mapping, amplifier wiring and transducer connections.
-- **Outcome:** No complete ESP32-S3 playback test confirmed yet. These remain exploratory attempts, not verified test entries.
+## Current result
 
-## 24 October 2026 | T01: Bluetooth playback
+We obtained clear playback at the contact points just in front of the ears while still hearing our surroundings. There was no noticeable leakage at normal listening levels, with only very faint leakage at maximum volume. Maximum volume was unnecessary.
 
-**Setup:** Laptop → Bluetooth A2DP → ESP32-WROOM-32 → I²S → MAX98357A → one BCT.
+[Playback observations](test-results.md#29-october-shared-amplifier-playback) · [T01 demonstration](https://youtube.com/shorts/Wacn75VJihI) · [T02 demonstration](https://youtu.be/clWIIejxp3k)
 
-- Paired the laptop and played audio through the transducer successfully.
-- The initial working setup had substantial background noise and strong vibration even before music started.
-- The transducer also heated up quickly during an earlier playback attempt.
-- **Outcome:** Bluetooth playback confirmed. Noise and heating needed further investigation.
+## Next
 
-[Watch T01](https://youtube.com/shorts/Wacn75VJihI) · [Test results](test-results.md)
-
-## 24 October 2026 | Direct-connection retest
-
-- Earlier direct wiring had produced inconsistent or no output.
-- Rechecked and corrected the physical connections, then repeated the WROOM playback test.
-- Audio sounded noticeably cleaner, with much less unwanted behaviour than the earlier setup.
-- **Outcome:** The revised connection worked better. We did not isolate every faulty contact or measure the change in noise level.
-
-## 25 October 2026 | Latest listening check
-
-- The current single-BCT setup was reported to play well, with **no unwanted idle vibration or noticeable heating during the check**.
-- A slight audio-quality limitation remains.
-- **Outcome:** Current playback is encouraging, but long-duration temperature, output level and sound-quality measurements have not been completed.
-
-## 29 October 2026 | T02: Wireless OTA
-
-- Added separate Bluetooth playback and Wi-Fi OTA modes.
-- Owner confirmed OTA testing was completed successfully.
-- **Outcome:** T02 marked passed; tested sketch and repeatability evidence still need to be archived.
-
-## Next / T03: Dual-BCT stereo
-
-- Obtain a replacement MAX98357A after damage to the second amplifier.
-- Test separate left/right outputs with two amplifiers and two transducers.
-- Continue ESP32-S3 and DSP experimentation; record each confirmed test individually.
-
-[All test results](test-results.md) · [Current test wiring](test-setup.md)
+We will test independent left/right output after buying the second amplifier. CAD development continues in parallel.

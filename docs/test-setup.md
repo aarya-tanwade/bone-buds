@@ -1,57 +1,27 @@
-# T01 | Hardware Test Setup
+# OSSIS bench setup
 
-**BoneBuds Alpha 0.1** | ESP32-WROOM Bluetooth A2DP playback
+We use an ESP32-WROOM-32, one MAX98357A and two Adafruit 8 Ω, 1 W BCTs connected in parallel. A phone is our reference Bluetooth A2DP source. USB powers the board; a computer runs Arduino IDE for uploads.
 
-This is the wiring used for the verified **single-BCT audio test**, not the final Prototype 1 hardware design.
+## Connections
 
-## Hardware
-
-| Part | Role |
+| ESP32-WROOM / source | MAX98357A |
 | --- | --- |
-| Laptop | Bluetooth audio source |
-| ESP32-WROOM-32 DevKit, 38-pin | Bluetooth A2DP receiver and I²S output |
-| MAX98357A breakout | I²S Class-D amplifier |
-| Bone-conduction transducer (BCT) | Single audio output |
-| USB cable | ESP32 power and firmware upload |
+| GPIO26 | BCLK / BCK |
+| GPIO25 | LRC / WS |
+| GPIO22 | DIN |
+| Board 5V | VIN |
+| GND | GND |
+| 3V3 | SD / MODE |
+| Unconnected | GAIN |
+| Both BCT positive leads | SPK+ |
+| Both BCT negative leads | SPK− |
 
-## Pin connections
+The two 8 Ω BCTs share one amplifier output in parallel, giving a nominal 4 Ω load. This is shared mono output. T03 will test independent left/right channels with two amplifiers.
 
-| ESP32-WROOM / source | MAX98357A | Purpose |
-| --- | --- | --- |
-| **GPIO26** | BCLK / BCK | I²S bit clock |
-| **GPIO25** | LRC / WS | I²S word select |
-| **GPIO22** | DIN | I²S audio data |
-| **Board 5V output** | VIN | Amplifier power |
-| **GND** | GND | Common ground |
-| **3V3** | SD / MODE | Amplifier enable and channel selection |
-| Not connected | GAIN | Left open in T01 |
-| BCT lead 1 | SPK+ | Amplifier output |
-| BCT lead 2 | SPK− | Amplifier output |
+[Wiring diagram](../images/diagrams/ossis-wiring.svg) · [Original T01 single-BCT wiring](../images/diagrams/t01-wiring.svg)
 
-**Power:** USB powers the ESP32. The board's 5V supply path feeds amplifier VIN; ESP32 3V3 feeds SD separately. Check your particular DevKit's 5V/VIN labels before wiring. **SPK− is not GND.**
+## Firmware
 
-The original test-setup graphic appears in the [main README](../README.md); use the table above if its power routing looks ambiguous.
+> **Main firmware:** [main.ino](../code/ossis/main/main.ino) holds our latest tested build, currently **T02 (Bluetooth + OTA)**.
 
-## Firmware and playback
-
-- **Board:** ESP32 Dev Module (original ESP32-WROOM, not S3)
-- **Sketch:** [T01_wroom_bt_a2dp.ino](../code/alpha-0.1/tests/T01_wroom_bt_a2dp/T01_wroom_bt_a2dp.ino)
-- **I²S settings in source:** 44.1 kHz, 16-bit, two channels
-- **Bluetooth device name:** `ESP32 Bone Speaker`
-- **Serial Monitor:** 115200 baud
-
-1. Connect the amplifier and **one BCT** with USB disconnected.
-2. Upload the sketch. Pair the laptop with `ESP32 Bone Speaker` and select it as the audio output.
-3. Start with low laptop volume, check for vibration while idle, then play a short audio clip.
-4. Stop and disconnect power if strong idle vibration or rapid heating returns.
-
-The sketch sends two audio channels. The MAX98357A SD/MODE connection also affects channel selection, so **SD connected to 3V3 does not prove a stereo-to-mono mix**. Do not connect two BCTs in parallel without checking the amplifier's supported load and the transducer ratings.
-
-## Safety and limits
-
-- Power off before changing wiring; check the supply, ground and header contacts.
-- Connect the BCT only between **SPK+** and **SPK−**. Do not ground either output.
-- Keep tests off the head until output level and thermal behaviour have been evaluated.
-- The latest short listening check had no reported heating or unwanted idle vibration, but sustained temperature and output-power tests are still pending.
-
-[Test results](test-results.md) · [Development log](development-log.md) · [Firmware guide](../code/alpha-0.1/tests/T01_wroom_bt_a2dp/README.md)
+[Upload guide](../code/README.md) · [T01 playback](../code/ossis/tests/T01_wroom_bt_a2dp/README.md) · [T02 OTA](../code/ossis/tests/T02_mono_ota/README.md) · [Test results](test-results.md)

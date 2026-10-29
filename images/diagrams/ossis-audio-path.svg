@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="420" viewBox="0 0 1440 420" role="img" aria-labelledby="title desc">
+  <title id="title">OSSIS audio signal path</title>
+  <desc id="desc">A phone sends Bluetooth A2DP audio to the ESP32-WROOM-32. Both digital channels pass through a 200 Hz high-pass, 2.8 kHz plus 4 dB peaking EQ, 5 kHz plus 2 dB high shelf and volume 1.0. I2S at 44.1 kHz, 16-bit and two channels feeds a MAX98357A amplifier and two BCTs sharing the amplifier output.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#386c83"/></marker>
+  </defs>
+  <rect width="1440" height="420" rx="12" fill="#f7f9fb"/>
+  <g font-family="Segoe UI, Arial, sans-serif" fill="#17324b">
+    <text x="42" y="52" font-size="28" font-weight="600">Audio signal flow</text>
+    <text x="42" y="84" font-size="19" fill="#596d7d">OSSIS / Two BCTs, one amplifier</text>
+    <g fill="#fff" stroke="#bacbd5" stroke-width="1.5">
+      <rect x="42" y="151" width="170" height="150" rx="8"/>
+      <rect x="355" y="116" width="461" height="220" rx="8"/>
+      <rect x="960" y="151" width="180" height="150" rx="8"/>
+      <rect x="1244" y="151" width="154" height="150" rx="8"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="127" y="209" font-size="24" font-weight="600">Phone</text>
+      <text x="127" y="244" font-size="18" fill="#596d7d">Audio source</text>
+      <text x="585" y="155" font-size="24" font-weight="600">ESP32-WROOM-32</text>
+      <text x="585" y="186" font-size="18" fill="#596d7d">A2DP sink / DSP on both digital channels</text>
+      <text x="1050" y="208" font-size="23" font-weight="600">MAX98357A</text>
+      <text x="1050" y="244" font-size="18" fill="#596d7d">I²S amplifier</text>
+      <text x="1321" y="209" font-size="24" font-weight="600">Two BCTs</text>
+      <text x="1321" y="244" font-size="18" fill="#596d7d">Shared output</text>
+    </g>
+    <g fill="none" stroke="#386c83" stroke-width="2" marker-end="url(#arrow)">
+      <path d="M212 226H345"/>
+      <path d="M816 226H950"/>
+      <path d="M1140 226H1234"/>
+    </g>
+    <g text-anchor="middle" font-size="18" fill="#386c83">
+      <text x="283" y="193">Bluetooth</text><text x="283" y="214">A2DP</text>
+      <text x="888" y="198">I²S</text><text x="888" y="262">44.1 kHz</text><text x="888" y="285">16-bit / 2 ch</text>
+      <text x="1190" y="194" font-size="16">Amplified</text><text x="1190" y="214" font-size="16">output</text>
+    </g>
+    <g fill="#edf4f6" stroke="#b9cdd5">
+      <rect x="374" y="215" width="99" height="81" rx="5"/>
+      <rect x="482" y="215" width="99" height="81" rx="5"/>
+      <rect x="590" y="215" width="99" height="81" rx="5"/>
+      <rect x="698" y="215" width="99" height="81" rx="5"/>
+    </g>
+    <g text-anchor="middle" font-size="17">
+      <text x="423" y="240">High-pass</text><text x="423" y="274">200 Hz</text>
+      <text x="531" y="240">Peak EQ</text><text x="531" y="264">2.8 kHz</text><text x="531" y="285">+4 dB</text>
+      <text x="639" y="240">High shelf</text><text x="639" y="264">5 kHz</text><text x="639" y="285">+2 dB</text>
+      <text x="747" y="240">Volume</text><text x="747" y="274">1.0</text>
+    </g>
+    <g stroke="#386c83" stroke-width="1.4" marker-end="url(#arrow)"><path d="M473 255H481"/><path d="M581 255H589"/><path d="M689 255H697"/></g>
+    <text x="42" y="385" font-size="18" fill="#596d7d">Bluetooth A2DP → DSP → I²S → MAX98357A → two BCTs</text>
+  </g>
+</svg>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="860" viewBox="0 0 1000 860" role="img" aria-labelledby="title desc">
+  <title id="title">OSSIS bench wiring with two BCTs</title>
+  <desc id="desc">ESP32 GPIO26 connects to BCLK, GPIO25 to WS and GPIO22 to DIN. Board 5V connects to amplifier VIN, 3V3 to SD and ground to ground. Both positive BCT wires connect to SPK plus; both negative wires connect to SPK minus. The two 8 ohm BCTs are in parallel on one MAX98357A output.</desc>
+  <rect width="1000" height="860" rx="12" fill="#f7f9fb"/>
+  <g font-family="Segoe UI,Arial,sans-serif" fill="#17324b">
+    <text x="40" y="48" font-size="28" font-weight="600">OSSIS / Bench wiring</text>
+    <text x="40" y="82" font-size="20" fill="#596d7d">Two BCTs in parallel / One MAX98357A</text>
+    <g fill="#fff" stroke="#bacbd5" stroke-width="1.5">
+      <rect x="40" y="110" width="280" height="400" rx="8"/>
+      <rect x="680" y="110" width="280" height="400" rx="8"/>
+      <rect x="380" y="610" width="240" height="80" rx="8"/>
+      <rect x="380" y="720" width="240" height="80" rx="8"/>
+    </g>
+    <text x="60" y="149" font-size="24" font-weight="600">ESP32-WROOM-32</text>
+    <text x="704" y="149" font-size="24" font-weight="600">MAX98357A</text>
+    <g font-size="22">
+      <text x="65" y="190">Board 5V</text><text x="710" y="190">VIN</text>
+      <text x="65" y="240">3V3</text><text x="710" y="240">SD / MODE</text>
+      <text x="65" y="290">GND</text><text x="710" y="290">GND</text>
+      <text x="65" y="340">GPIO26</text><text x="710" y="340">BCLK</text>
+      <text x="65" y="390">GPIO25</text><text x="710" y="390">WS / LRC</text>
+      <text x="65" y="440">GPIO22</text><text x="710" y="440">DIN</text>
+    </g>
+    <text x="710" y="480" font-size="19" fill="#596d7d">GAIN: unconnected</text>
+    <g stroke-width="2.5" fill="none">
+      <path d="M320 183H680" stroke="#9c643d"/>
+      <path d="M320 233H680" stroke="#85539a"/>
+      <path d="M320 283H680" stroke="#596d7d"/>
+      <path d="M320 333H680M320 383H680M320 433H680" stroke="#386c83"/>
+      <path d="M740 510V550H100V760M100 650H380M100 760H380" stroke="#386c83"/>
+      <path d="M900 510V760M620 650H900M620 760H900" stroke="#596d7d"/>
+    </g>
+    <g text-anchor="middle" font-size="18" fill="#596d7d">
+      <text x="500" y="174">Amplifier supply</text>
+      <text x="500" y="224">Enable / channel selection</text>
+      <text x="500" y="274">Common ground</text>
+      <text x="500" y="324">I²S bit clock</text>
+      <text x="500" y="374">I²S word select</text>
+      <text x="500" y="424">I²S data</text>
+    </g>
+    <g text-anchor="middle">
+      <text x="790" y="540" font-size="20">SPK+</text>
+      <text x="937" y="540" font-size="20">SPK−</text>
+      <text x="500" y="642" font-size="22" font-weight="600">BCT 1</text>
+      <text x="500" y="672" font-size="19">8 Ω / 1 W</text>
+      <text x="500" y="752" font-size="22" font-weight="600">BCT 2</text>
+      <text x="500" y="782" font-size="19">8 Ω / 1 W</text>
+      <text x="500" y="837" font-size="20" fill="#596d7d">Both transducers receive the same amplifier output.</text>
+    </g>
+    <g fill="#386c83"><circle cx="100" cy="650" r="4"/><circle cx="100" cy="760" r="4"/></g>
+    <g fill="#596d7d"><circle cx="900" cy="650" r="4"/><circle cx="900" cy="760" r="4"/></g>
+  </g>
+</svg>

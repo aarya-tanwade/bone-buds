@@ -1,1 +1,0 @@
-{"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n    \"error\": \"Traceback (most recent call last):\\n  File \\\"<string>\\\", line 149, in <module>\\n  File \\\"<string>\\\", line 36, in run\\nAttributeError: property '_get_defaultLengthUnits' of 'FusionUnitsManager' object has no setter\\n\",\n    \"success\": false\n}", "type": "text"}]}}

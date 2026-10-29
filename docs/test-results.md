@@ -1,63 +1,38 @@
-# Test Results
+# OSSIS test results
 
-**BoneBuds / OSSIS** | Hardware and firmware test index
+| ID | Test | Status | Evidence |
+| --- | --- | --- | --- |
+| T01 | Bluetooth A2DP playback | **PASSED** · 24 October 2026 | [Video](https://youtube.com/shorts/Wacn75VJihI) |
+| T02 | Wireless OTA | **PASSED** · 29 October 2026 | [Video](https://youtu.be/clWIIejxp3k) · [OTA screenshot](../images/tests/T02/ota-upload-arduino-ide.png) |
+| T03 | Independent left/right playback | **NEXT** · Waiting for the second amplifier | Planned |
 
-Confirmed functionality is not equivalent to validated audio quality, battery life or electrical/thermal safety.
+## T01: Bluetooth A2DP playback
 
-| ID | Test | Hardware | Result | Evidence |
-| --- | --- | --- | --- | --- |
-| **T01** | Bluetooth A2DP audio playback | ESP32-WROOM-32 + MAX98357A + one BCT | **Passed: playback confirmed** | [Video](https://youtube.com/shorts/Wacn75VJihI) |
-| **T02** | Wireless firmware update over Wi-Fi OTA | ESP32-WROOM-32, same single-BCT setup | **Passed: owner-confirmed (29 Oct 2026)** | Test confirmed by owner; firmware not yet committed |
-| **T03** | Independent left/right BCT stereo | Two MAX98357A amps + two BCTs | **Planned; awaiting replacement amplifier** | — |
+We verified end-to-end A2DP playback through the ESP32-WROOM-32, I²S, MAX98357A and one BCT on 24 October.
 
-## T01 | Bluetooth A2DP Audio Playback
+[Verified sketch](../code/ossis/tests/T01_wroom_bt_a2dp/T01_wroom_bt_a2dp.ino) · [Procedure and DSP settings](../code/ossis/tests/T01_wroom_bt_a2dp/README.md)
 
-**Date:** 24 October 2026  
-**Firmware:** [T01_wroom_bt_a2dp.ino](../code/alpha-0.1/tests/T01_wroom_bt_a2dp/T01_wroom_bt_a2dp.ino)  
-**Setup:** Laptop → Bluetooth A2DP → ESP32-WROOM-32 → I²S → MAX98357A → one BCT
+## 29 October: shared-amplifier playback
 
-### Objective
+We tested two Adafruit 8 Ω, 1 W BCTs in parallel on one MAX98357A output, using a phone as the Bluetooth source.
 
-Check whether a laptop can stream music over Bluetooth to the ESP32 and play it through a bone-conduction transducer.
-
-### Procedure
-
-1. Connect the [T01 hardware setup](test-setup.md) with power disconnected.
-2. Upload the verified WROOM sketch and pair the laptop with **ESP32 Bone Speaker**.
-3. Play audio at a low source volume and check both the idle and playback behaviour.
-
-See the [firmware README](../code/alpha-0.1/tests/T01_wroom_bt_a2dp/README.md) for dependencies and upload instructions.
-
-### Observations
-
-| Stage | What we observed |
+| Check | Our observation |
 | --- | --- |
-| Initial attempts | No output or inconsistent playback with direct wiring. |
-| First successful playback | Bluetooth pairing and music playback worked; noise, unwanted idle vibration and rapid heating were reported. |
-| Corrected-connection retest | Audio playback was noticeably cleaner. |
-| Latest check, 25 Oct | Playback working well; no unwanted vibration or noticeable heating reported during the check. A slight quality limitation remains. |
+| Playback | Clear and loud, with no audible noise from the phone stream |
+| Contact position | Clear output at the contact points just in front of the ears; earlier we had used placement behind the ears |
+| Surroundings | We could still hear surrounding sounds during playback |
+| Leakage | No noticeable leakage at normal levels; very faint leakage at maximum volume when closely listening for it |
+| Volume | Maximum volume was unnecessary |
+| Laptop source | Slight noise and intermittent breakup; we have not isolated the cause |
 
-### Result
+We will use the phone for repeat tests. The parallel BCTs share one output; T03 will test independent left/right channels with two amplifiers.
 
-**Passed: basic Bluetooth audio playback through one BCT.** The cleaner result followed changes to the physical connections, not a measured DSP improvement. The exact cause of the earlier symptoms was not fully isolated.
+## T02: Wireless OTA
 
-**Not yet measured:** noise floor, audio output level, transducer temperature over time, power consumption, frequency response and long-duration stability.
+We uploaded firmware over Wi-Fi and returned to Bluetooth playback on 29 October.
 
-**Evidence:** [T01 demonstration on YouTube](https://youtube.com/shorts/Wacn75VJihI). The recording demonstrates playback, not acoustic or thermal performance.
+[Verified sketch](../code/ossis/tests/T02_mono_ota/T02_mono_ota.ino) · [Mode flow and upload procedure](../code/ossis/tests/T02_mono_ota/README.md)
 
----
+Our [Arduino IDE screenshot](../images/tests/T02/ota-upload-arduino-ide.png) shows **OTA upload in progress**.
 
-## T02 | Wireless OTA Firmware Update
-
-**Reported verified:** 29 October 2026  
-**Setup:** ESP32-WROOM-32, using separate Bluetooth-audio and Wi-Fi OTA modes.
-
-**Result:** Owner confirmed successful testing of the OTA update capability. The tested T02 firmware and repeatability evidence have not yet been committed to this repository. This does not establish long-duration reliability, battery efficiency, or secure production-ready updating.
-
-## T03 | Dual-BCT Stereo (Next)
-
-Plan: use two MAX98357A amplifiers to drive separate left/right bone-conduction transducers. Awaiting a replacement amplifier after damage to the second module. No stereo playback result is recorded.
-
-ESP32-S3 tone, local-player and microphone-loopback work remains exploratory.
-
-[Development log](development-log.md) · [Wiring and setup](test-setup.md)
+[Development log](development-log.md) · [Bench setup](test-setup.md)
