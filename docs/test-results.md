@@ -1,12 +1,14 @@
 # Test Results
 
-**BoneBuds Alpha 0.1** | Hardware test index
+**BoneBuds / OSSIS** | Hardware and firmware test index
 
-Only tests with confirmed hardware output are listed here. **Playback verified** does not mean that audio quality, electrical power or thermal safety has been validated.
+Confirmed functionality is not equivalent to validated audio quality, battery life or electrical/thermal safety.
 
-| ID | Test | Hardware | Result | Demo |
+| ID | Test | Hardware | Result | Evidence |
 | --- | --- | --- | --- | --- |
-| **T01** | Bluetooth A2DP audio playback | ESP32-WROOM-32 + MAX98357A + one BCT | **Playback confirmed** | [Watch](https://youtube.com/shorts/Wacn75VJihI) |
+| **T01** | Bluetooth A2DP audio playback | ESP32-WROOM-32 + MAX98357A + one BCT | **Passed: playback confirmed** | [Video](https://youtube.com/shorts/Wacn75VJihI) |
+| **T02** | Wireless firmware update over Wi-Fi OTA | ESP32-WROOM-32, same single-BCT setup | **Passed: owner-confirmed (29 Oct 2026)** | Test confirmed by owner; firmware not yet committed |
+| **T03** | Independent left/right BCT stereo | Two MAX98357A amps + two BCTs | **Planned; awaiting replacement amplifier** | — |
 
 ## T01 | Bluetooth A2DP Audio Playback
 
@@ -45,6 +47,17 @@ See the [firmware README](../code/alpha-0.1/tests/T01_wroom_bt_a2dp/README.md) f
 
 ---
 
-ESP32-S3 tone, local-player and microphone-loopback work is still exploratory. Dual-BCT and external Bluetooth-module tests are planned. **T02 will be added only after another hardware test is verified.**
+## T02 | Wireless OTA Firmware Update
+
+**Reported verified:** 29 October 2026  
+**Setup:** ESP32-WROOM-32, using separate Bluetooth-audio and Wi-Fi OTA modes.
+
+**Result:** Owner confirmed successful testing of the OTA update capability. The tested T02 firmware and repeatability evidence have not yet been committed to this repository. This does not establish long-duration reliability, battery efficiency, or secure production-ready updating.
+
+## T03 | Dual-BCT Stereo (Next)
+
+Plan: use two MAX98357A amplifiers to drive separate left/right bone-conduction transducers. Awaiting a replacement amplifier after damage to the second module. No stereo playback result is recorded.
+
+ESP32-S3 tone, local-player and microphone-loopback work remains exploratory.
 
 [Development log](development-log.md) · [Wiring and setup](test-setup.md)
