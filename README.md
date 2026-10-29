@@ -6,9 +6,9 @@ We’re building OSSIS, our first BoneBuds prototype, for clean Bluetooth audio 
 
 We have verified Bluetooth playback and wireless OTA updates. Our latest phone test drove two BCTs in parallel from one MAX98357A, producing clear, loud audio without audible noise. Independent stereo is next; CAD design work continues in parallel.
 
-![Platform: ESP32-WROOM-32](https://img.shields.io/badge/platform-ESP32--WROOM--32-555)
+![ESP32-WROOM-32](https://img.shields.io/badge/platform-ESP32--WROOM--32-555)
 ![Prototype: OSSIS](https://img.shields.io/badge/prototype-OSSIS-555)
-![Verified tests: T01 and T02 passed](https://img.shields.io/badge/tests-T01%20%2B%20T02%20passed-2d7a46)
+![Verified Tests: T01 and T02 passed](https://img.shields.io/badge/tests-T01%20%2B%20T02%20passed-2d7a46)
 
 [Current firmware](code/ossis/main/main.ino) · [Upload guide](code/README.md) · [Bench setup](docs/test-setup.md) · [Test records](docs/test-results.md)
 
