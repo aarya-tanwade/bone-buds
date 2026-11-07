@@ -1,62 +1,163 @@
+
 # BoneBuds / OSSIS
 
 <img src="images/hero/ossis-masthead.png" alt="OSSIS / BoneBuds Prototype 1" width="720">
 
-We’re building OSSIS, our first BoneBuds prototype, for clean Bluetooth audio playback through a bone-conduction transducer.
+We’re building OSSIS, the first BoneBuds prototype: a Bluetooth audio system that delivers sound through bone-conduction transducers.
 
-We have verified Bluetooth playback and wireless OTA updates. Our latest phone test drove two BCTs in parallel from one MAX98357A, producing clear, loud audio without audible noise. Independent stereo is next; CAD design work continues in parallel.
+We have verified Bluetooth playback, wireless firmware updates and independent left/right stereo playback. Our current bench prototype uses an ESP32-WROOM-32, two MAX98357A amplifiers and two separate bone-conduction transducers (BCTs).
 
-![ESP32-WROOM-32](https://img.shields.io/badge/platform-ESP32--WROOM--32-555)
+The next stage is moving from breadboard testing towards a compact perfboard assembly, battery-powered operation and a wearable product design.
+
+![Platform: ESP32-WROOM-32](https://img.shields.io/badge/platform-ESP32--WROOM--32-555)
 ![Prototype: OSSIS](https://img.shields.io/badge/prototype-OSSIS-555)
-![Verified Tests: T01 and T02 passed](https://img.shields.io/badge/tests-T01%20%2B%20T02%20passed-2d7a46)
+![Verified tests: T01, T02 and T03 passed](https://img.shields.io/badge/tests-T01%20%2B%20T02%20%2B%20T03%20passed-2d7a46)
 
-[Current firmware](code/ossis/main/main.ino) · [Upload guide](code/README.md) · [Bench setup](docs/test-setup.md) · [Test records](docs/test-results.md)
+[Current firmware](code/ossis/main/main.ino) · [Upload guide](code/README.md) · [Bench setup](docs/test-setup.md) · [Test records](docs/test-results.md) · [Development log](docs/development-log.md)
 
 ## Current status
 
 | Test | Scope | Status |
 | --- | --- | --- |
-| **T01: Bluetooth A2DP playback** | Bluetooth A2DP → DSP → I²S → amplifier | **PASSED** · 24 October 2026 |
-| **T02: Wireless OTA** | Wireless firmware upload with separate audio and update modes | **PASSED** · 29 October 2026 |
-| **T03: Stereo playback** | Two MAX98357A amplifiers and two BCTs | **NEXT** · Waiting for the second amplifier |
+| **T01: Bluetooth A2DP playback** | Bluetooth audio reception, DSP and I²S amplification | **PASSED** · 24 October 2026 |
+| **T02: Wireless OTA** | Firmware uploads over Wi-Fi using ArduinoOTA | **PASSED** · 29 October 2026 |
+| **T03: Independent stereo** | Two MAX98357A amplifiers and two separate BCTs | **PASSED** |
 
 ## Audio architecture
 
-We use the ESP32 to receive Bluetooth Classic A2DP audio, process both digital channels and send the result over I²S. One MAX98357A drives two bone-conduction transducers (BCTs) from a shared mono output.
+The ESP32 receives Bluetooth Classic A2DP audio in two digital channels. Each channel passes through its own independent DSP processing chain before reaching the stereo I²S output.
 
-[<img src="images/diagrams/ossis-audio-path.svg" alt="Phone over Bluetooth A2DP to ESP32 DSP, I²S, one MAX98357A and two BCTs sharing its output" width="960">](images/diagrams/ossis-audio-path.svg)
+Both MAX98357A amplifiers receive the shared I²S clock and data connections. Their SD_MODE configurations select different channels, allowing each amplifier to drive its own transducer.
+
+```mermaid
+flowchart TD
+    phone["Phone / Bluetooth audio source"]
+    bt["Bluetooth Classic A2DP"]
+    esp["ESP32-WROOM-32"]
+
+    phone --> bt
+    bt --> esp
+
+    esp --> dsp["Stereo DSP<br/>32-bit floating-point processing"]
+
+    dsp --> left["Left DSP chain"]
+    dsp --> right["Right DSP chain"]
+
+    left --> i2s["Stereo I²S output<br/>44.1 kHz / 16-bit"]
+    right --> i2s
+
+    i2s --> bus["Shared BCLK / WS / DIN"]
+
+    bus --> ampL["MAX98357A<br/>Left channel selected"]
+    bus --> ampR["MAX98357A<br/>Right channel selected"]
+
+    ampL --> bctL["Left BCT"]
+    ampR --> bctR["Right BCT"]
+
+    classDef source fill:#edf3f6,stroke:#7896a8,color:#17324b
+    classDef processing fill:#eaf2f8,stroke:#6c91ad,color:#17324b
+    classDef hardware fill:#f5f1e9,stroke:#b29b70,color:#42351e
+    classDef output fill:#edf4ed,stroke:#83a286,color:#23442a
+
+    class phone,bt source
+    class esp,dsp,left,right,i2s,bus processing
+    class ampL,ampR hardware
+    class bctL,bctR output
+```
+
+### DSP configuration
+
+The current stereo firmware uses separate `BoneChannelDSP` instances for left and right audio processing.
 
 | DSP stage | Configured setting | Purpose |
 | --- | --- | --- |
-| High-pass | 200 Hz | Attenuate low-frequency content |
-| Peaking EQ | 2.8 kHz, +4 dB | Emphasize the presence region |
-| High shelf | 5 kHz, +2 dB | Adjust high-frequency balance |
+| Pre-gain | -4.5 dB | Creates headroom before EQ boosts |
+| High-pass | 180 Hz, Q = 0.7071 | Attenuates low-frequency content |
+| Peaking EQ | 2.8 kHz, +4 dB, 0.8-octave bandwidth | Emphasizes the presence region |
+| High shelf | 5.5 kHz, +2.5 dB, slope = 1.0 | Adjusts high-frequency balance |
+| Output limiter | Soft-knee above 90% full scale | Reduces harsh peak clipping |
+| Master volume | 1.0 | Output scaling |
 
-The configured I²S format is **44.1 kHz, 16-bit, two digital channels**.
+The DSP chain uses 32-bit floating-point calculations, followed by a soft-knee limiter and a signed 16-bit safety clamp.
 
-Both BCTs receive the same amplifier output. Independent left/right playback is the next test. [DSP settings](code/ossis/tests/T01_wroom_bt_a2dp/README.md#signal-path-and-dsp).
+The configured I²S format is **44.1 kHz, 16-bit, two channels**. Hardware APLL is enabled in the current firmware.
+
+[Current DSP implementation](code/ossis/main/main.ino) · [T03 test documentation](code/ossis/tests/T03_independent_stereo/README.md)
 
 ## T01: Bluetooth A2DP playback
 
-We verified Bluetooth Classic A2DP streaming through the ESP32-WROOM-32 and MAX98357A on **24 October**.
+**PASSED · 24 October 2026.** We verified Bluetooth Classic A2DP streaming through the ESP32-WROOM-32, MAX98357A and one bone-conduction transducer.
 
-Our **29 October** phone test used two 8 Ω BCTs in parallel on one amplifier. Audio was loud and clear at the contact areas just in front of each ear, while surrounding sounds remained audible. We did not need maximum volume.
+[Verified T01 sketch](code/ossis/tests/T01_wroom_bt_a2dp/T01_wroom_bt_a2dp.ino) · [Reproduce the test](code/ossis/tests/T01_wroom_bt_a2dp/README.md) · [Bench wiring](docs/test-setup.md)
 
-There was no noticeable sound leakage at normal listening volume and only very faint leakage at maximum. Laptop streaming produced slight noise and intermittent breakup, so we will use a phone as the reference source for future tests.
+### 29 October: Shared-amplifier playback
+
+We subsequently tested two Adafruit 8 Ω, 1 W BCTs connected in parallel to one MAX98357A amplifier, using a phone as the Bluetooth source.
+
+Audio was clear and loud at the contact points just in front of each ear, while surrounding sounds remained audible. Maximum volume was unnecessary.
+
+There was no noticeable sound leakage at normal listening volume and only very faint leakage at maximum volume when listening closely.
+
+Laptop streaming produced slight noise and intermittent breakup, so we selected a phone as our reference source for subsequent testing.
 
 [<img src="https://img.youtube.com/vi/Wacn75VJihI/hqdefault.jpg" alt="T01 Bluetooth playback demonstration" width="440">](https://youtube.com/shorts/Wacn75VJihI)
 
-[T01 sketch](code/ossis/tests/T01_wroom_bt_a2dp/T01_wroom_bt_a2dp.ino) · [Reproduce the test](code/ossis/tests/T01_wroom_bt_a2dp/README.md) · [Recorded observations](docs/test-results.md#t01-bluetooth-a2dp-playback)
+[Recorded observations](docs/test-results.md#t01-bluetooth-a2dp-playback)
 
 ## T02: Wireless OTA
 
-We use OTA to upload firmware from Arduino IDE over Wi-Fi after the initial USB installation. This lets us update the firmware without a USB data connection. Bluetooth audio and Wi-Fi OTA run on separate boots.
+**PASSED · 29 October 2026.** We verified wireless firmware uploads on the ESP32-WROOM-32 using ArduinoOTA over Wi-Fi.
 
-<img src="images/diagrams/t02-wireless-update.png" alt="Arduino IDE sends firmware over Wi-Fi to the ESP32, which restarts into Bluetooth playback" width="800">
+OTA allows us to upload firmware through Arduino IDE without a USB data connection after the initial USB installation.
 
-- **Bluetooth mode:** pair within the initial **20-second** connection window. Once connected, audio mode remains active. Losing that connection for **3 seconds** triggers OTA; pausing music while still connected does not.
-- **OTA mode:** the ESP32 runs a Wi-Fi access point and ArduinoOTA on **port 3232**, with no automatic timeout. The saved mode survives a reset.
-- **Return to playback:** a completed update saves Bluetooth mode for the next boot. The **Start Bluetooth** button at `http://192.168.4.1` also saves that mode and restarts the board. The web page controls the mode; it is not a firmware upload form.
+Bluetooth playback and OTA operate on separate boots. The firmware saves the operating mode using Preferences before restarting.
+
+### Operating modes
+
+```mermaid
+flowchart TD
+    boot{"Boot: saved operating mode?"}
+
+    boot -->|Bluetooth or unset| bt["Bluetooth mode<br/>Wi-Fi off"]
+    boot -->|OTA| ota["Wi-Fi access point<br/>ArduinoOTA active"]
+
+    bt -->|Connected within 20 s| play["Bluetooth audio playback"]
+    bt -->|No initial connection| save["Save OTA mode / restart"]
+
+    play -->|Connection lost for 3 s| save
+
+    save --> ota
+
+    ota --> upload["Wireless firmware upload<br/>Port 3232"]
+    upload -->|Upload error| ota
+    upload -->|Upload complete| restart["Save Bluetooth mode / restart"]
+
+    ota -->|Start Bluetooth button| restart
+    restart --> boot
+```
+
+- **Bluetooth mode:** Pair within the initial 20-second connection window. Once connected, audio mode remains active.
+- **Disconnection:** Losing an established Bluetooth connection for 3 seconds triggers OTA mode. Pausing music while still connected does not.
+- **OTA mode:** The ESP32 runs a Wi-Fi access point and ArduinoOTA on port 3232. There is no automatic OTA timeout.
+- **Return to playback:** A completed firmware update saves Bluetooth mode for the next boot.
+- **Manual return:** The **Start Bluetooth** button at `http://192.168.4.1` saves Bluetooth mode and restarts the board.
+
+<details>
+<summary>Detailed OTA procedure and operating notes</summary>
+
+1. Install the firmware over USB initially.
+2. Leave Bluetooth unconnected for 20 seconds, or disconnect an established connection and wait 3 seconds.
+3. Connect your computer to the ESP32 Wi-Fi access point.
+4. Open `http://192.168.4.1` to check OTA mode.
+5. Select the ESP32 network port in Arduino IDE and upload the firmware.
+6. Wait for the update to complete and the board to restart.
+7. Reconnect to the Bluetooth audio device.
+
+The web page controls the operating mode; it is not a firmware upload form.
+
+The saved mode survives a reset. A reset alone does not exit OTA mode.
+
+</details>
 
 | Demonstration | Arduino IDE record |
 | :---: | :---: |
@@ -65,100 +166,145 @@ We use OTA to upload firmware from Arduino IDE over Wi-Fi after the initial USB 
 
 [T02 sketch](code/ossis/tests/T02_mono_ota/T02_mono_ota.ino) · [Mode flowchart and upload procedure](code/ossis/tests/T02_mono_ota/README.md) · [Test record](docs/test-results.md#t02-wireless-ota)
 
-## Bill of materials
+## T03: Independent Stereo Playback
 
-Our current two-BCT, single-amplifier setup:
+**PASSED.** We successfully verified independent left and right audio playback using two MAX98357A amplifier modules and two separate bone-conduction transducers.
+
+Each amplifier receives the same I²S clock and data signals but selects a different digital channel through its SD_MODE configuration.
+
+The left amplifier drives the left BCT, and the right amplifier drives the right BCT.
+
+### Hardware architecture
+
+```mermaid
+flowchart LR
+    esp["ESP32-WROOM-32"]
+
+    esp --> bus["Shared I²S bus<br/>GPIO 26 / 25 / 22"]
+
+    bus --> left["Left MAX98357A"]
+    bus --> right["Right MAX98357A"]
+
+    left --> bctL["Left BCT"]
+    right --> bctR["Right BCT"]
+```
+
+### Channel selection
+
+The two amplifiers use different SD_MODE configurations:
+
+| Amplifier | SD_MODE connection | Selected channel |
+| --- | --- | --- |
+| Left | Direct +5V connection | Left |
+| Right | 1 kΩ / 230 Ω resistor divider | Right |
+
+The tested right-channel resistor arrangement uses:
+
+- 1 kΩ (Brown - Black - Red - Gold) from +5V to SD_MODE.
+- 230 Ω (Red - Orange - Brown - Gold) from SD_MODE to GND.
+
+> [!WARNING]
+> Keep the speaker outputs of the two MAX98357A amplifiers electrically separate. Each amplifier drives only its own BCT.
+
+### Hardware evidence
+
+The photograph below documents our actual T03 stereo bench configuration.
+
+[<img src="images/tests/T03/t03-stereo-hardware-setup.jpg" alt="OSSIS T03 stereo hardware showing ESP32-WROOM-32, two MAX98357A amplifiers and two separate bone-conduction transducers" width="760">](images/tests/T03/t03-stereo-hardware-setup.jpg)
+
+*OSSIS T03: Independent left and right audio playback using two amplifier modules.*
+
+### Verification results
+
+| Check | Result |
+| --- | --- |
+| Bluetooth A2DP connection | **PASSED** |
+| Left-channel playback | **PASSED** |
+| Right-channel playback | **PASSED** |
+| Independent left/right output | **PASSED** |
+| Both amplifiers operating together | **PASSED** |
+| Separate BCT outputs | **PASSED** |
+
+We verified independent channel playback using stereo test audio.
+
+[T03 test sketch](code/ossis/tests/T03_independent_stereo/T03_independent_stereo.ino) · [T03 test procedure](code/ossis/tests/T03_independent_stereo/README.md) · [T03 test record](docs/test-results.md#t03-independent-stereo-playback)
+
+> [!NOTE]
+> T03 is now the current main firmware. The T02 OTA functionality remains available in its separate test sketch and has not yet been integrated into the current stereo firmware.
+
+## Bill of Materials
+
+Our current T03 bench prototype uses one ESP32 development board, two amplifier modules and two bone-conduction transducers.
 
 | Reference photo | Part and use | Qty | Unit cost | Total |
 | :---: | --- | :---: | ---: | ---: |
-| <img src="images/components/esp32-wroom-reference.jpg" alt="Espressif ESP32-WROOM development-board reference" width="130"> | [ESP32-WROOM-32 development board](https://docs.espressif.com/projects/esp-idf/en/v4.4/esp32/hw-reference/esp32/get-started-devkitc.html)<br>38 pins; Bluetooth, DSP, I²S and Wi-Fi OTA | 1 | ₹400 | ₹400 |
-| <img src="images/components/max98357a-reference.jpg" alt="MAX98357A amplifier breakout" width="110"> | [MAX98357A amplifier](https://www.hubtronics.in/max98357a-stereo-amplifier-module)<br>I²S input, mono Class-D output | 1 | ₹134 est. | ₹134 |
-| <img src="images/components/adafruit-bct-1674.jpg" alt="Adafruit 1674 bone-conduction transducer with wires" width="130"> | [Adafruit BCT, product 1674](https://www.adafruit.com/product/1674)<br>8 Ω, 1 W RMS each | 2 | ₹700 | ₹1,400 |
-| | **Estimated total** | | | **₹1,934** |
+| <img src="images/components/esp32-wroom-reference.jpg" alt="ESP32-WROOM development board" width="130"> | [ESP32-WROOM-32 development board](https://docs.espressif.com/projects/esp-idf/en/v4.4/esp32/hw-reference/esp32/get-started-devkitc.html)<br>38 pins; Bluetooth, DSP, I²S and Wi-Fi | 1 | ₹400 | ₹400 |
+| <img src="images/components/max98357a-reference.jpg" alt="MAX98357A amplifier breakout" width="110"> | [MAX98357A amplifier](https://www.hubtronics.in/max98357a-stereo-amplifier-module)<br>I²S input, mono Class-D output | 2 | ₹200 | ₹400 |
+| <img src="images/components/adafruit-bct-1674.jpg" alt="Adafruit 1674 bone-conduction transducer" width="130"> | [Adafruit BCT, product 1674](https://www.adafruit.com/product/1674)<br>8 Ω, 1 W RMS each | 2 | ₹700 | ₹1,400 |
+| | **Estimated hardware total** | | | **₹2,200** |
+
+The 1 kΩ and 230 Ω resistors used for right-channel selection are existing components and are not included in the estimated total.
 
 ### Wiring
 
-<img src="images/diagrams/ossis-wiring.svg" alt="ESP32 to MAX98357A wiring with two BCTs connected in parallel across its shared output" width="680">
+The current bench wiring uses shared I²S connections and independent amplifier outputs.
 
-[Connection table](docs/test-setup.md)
+[Connection table and SD_MODE wiring](docs/test-setup.md)
+
+[Physical T03 hardware setup](images/tests/T03/t03-stereo-hardware-setup.jpg)
+
+The older [shared-amplifier wiring diagram](images/diagrams/ossis-wiring.svg) documents the earlier two-BCT mono configuration, not the current independent stereo setup. The original [T01 wiring diagram](images/diagrams/t01-wiring.svg) is retained as a historical reference.
 
 ## Firmware and repository
 
-> **Main firmware:** [main.ino](code/ossis/main/main.ino) holds our latest tested build, currently **T02 (Bluetooth + OTA)**.
+> [!IMPORTANT]
+> **Current firmware:** [main.ino](code/ossis/main/main.ino) contains the latest working **T03 independent stereo implementation**. It currently does not include the T02 wireless OTA functionality.
 
 ```text
 code/
-  README.md                         Build and upload guide
+  README.md
   ossis/
-    main/main.ino                   Latest tested build (T02)
-    tests/T01_wroom_bt_a2dp/         Bluetooth playback baseline
-    tests/T02_mono_ota/              Wireless OTA experiment
-docs/                               Setup, results and development history
-images/                             Diagrams, visual assets and test evidence
+    main/
+      main.ino                       Current T03 stereo firmware
+    tests/
+      T01_wroom_bt_a2dp/
+        T01_wroom_bt_a2dp.ino        Bluetooth playback baseline
+        README.md
+      T02_mono_ota/
+        T02_mono_ota.ino             Wireless OTA experiment
+        README.md
+      T03_independent_stereo/
+        T03_independent_stereo.ino   Independent stereo test
+        README.md
+
+docs/
+  README.md                          Documentation index
+  test-setup.md                      Current hardware connections
+  test-results.md                    Verified test records
+  development-log.md                 Engineering history
+
+images/
+  hero/                              Project masthead
+  components/                        Hardware reference photos
+  diagrams/                          Architecture and wiring diagrams
+  tests/
+    T02/                             OTA test evidence
+    T03/                             Stereo hardware evidence
 ```
 
-[Documentation index](docs/README.md) · [Test results](docs/test-results.md) · [Development log](docs/development-log.md)
+[Documentation index](docs/README.md) · [Test results](docs/test-results.md) · [Development log](docs/development-log.md) · [Firmware guide](code/README.md)
 
 ## Next work
 
+With independent stereo playback verified, our next objective is to move towards a more compact, battery-powered and wearable prototype.
+
 | Work | State | Next action |
 | --- | --- | --- |
-| **T03: Stereo playback** | Next | Obtain the second amplifier, configure independent left/right channels and test two BCTs |
-| **CAD design** | In progress | Continue mechanical design alongside audio testing; no design files are included in this revision |
+| **Perfboard prototype** | NEXT | Replace temporary breadboard connections with a more stable assembly |
+| **Battery integration** | Planned | Develop portable power and test battery-powered playback and runtime |
+| **Product concept** | Planned | Explore product form, wearable arrangement and industrial design ideas |
+| **3D mechanical design** | Not started | Develop the enclosure and mechanical assembly |
+| **Final testing** | Planned | Validate audio quality, reliability, power consumption and thermal behaviour |
+| **System optimization** | Planned | Refine firmware, hardware and overall listening experience |
 
-## T03: Stereo DSP development candidate
-
-We have drafted a separate stereo playback pipeline for the next hardware test. This is a **development candidate, not a verified build**. The current [main firmware](code/ossis/main/main.ino) remains the tested **T02 Bluetooth + OTA** version until stereo playback is validated.
-
-The proposed pipeline keeps the left and right audio channels independent:
-
-```text
-Bluetooth A2DP (44.1 kHz, 16-bit, stereo)
-                  |
-          ESP32-WROOM-32
-                  |
-       One FilteredStream pipeline
-          /                 \
-   Left DSP chain       Right DSP chain
-          \                 /
-             Stereo I²S
-                  |
-       Shared BCLK / WS / DIN
-             /          \
-      MAX98357A        MAX98357A
-       Left only        Right only
-          |                |
-       Left BCT         Right BCT
-```
-
-### Proposed stereo DSP settings
-
-| DSP stage | Candidate setting | Purpose |
-| --- | --- | --- |
-| Pre-gain | −4.5 dB | Create headroom before EQ boosts |
-| High-pass | 180 Hz, Q = 0.7071 | Attenuate low-frequency content |
-| Peaking EQ | 2.8 kHz, +4 dB, 0.8-octave bandwidth | Emphasize the presence region |
-| High shelf | 5.5 kHz, +2.5 dB, slope = 1.0 | Adjust high-frequency balance |
-| Output limiter | Soft-knee above 90% PCM full scale, followed by a signed 16-bit clamp | Reduce harsh clipping and prevent output wraparound |
-
-The candidate uses separate filter state for each channel and keeps the filter stages in a single floating-point processing chain. Its proposed I²S configuration is **44.1 kHz, 16-bit, two channels**, with the ESP32 APLL requested and DMA buffers configured at 512 samples × 10.
-
-These are firmware settings, not measured acoustic results. The EQ values and limiter still need listening tests and level checks with the actual transducers.
-
-### Stereo amplifier wiring note
-
-Both MAX98357A modules receive the same I²S **BCLK, WS/LRCLK and DIN** signals. Their channel-selection pins must be configured differently: one amplifier selects the left channel and the other selects the right channel. This is a hardware SD_MODE/MODE configuration; the candidate sketch does not set it in software.
-
-Check the exact breakout-board circuit before changing its SD/MODE connection. The MAX98357A datasheet specifies a direct logic-high selection for left and a VDDIO-dependent pull-up resistor for right; its example value for 3.3 V VDDIO is approximately **210 kΩ**. Do not assume every breakout exposes the bare chip pin in the same way. See the [MAX98357A/MAX98357B datasheet, SD_MODE channel selection](https://cdn-shop.adafruit.com/product-files/3006/MAX98357A-MAX98357B.pdf).
-
-For independent stereo, use one BCT on each amplifier's own speaker output. Do not connect the two amplifiers' speaker outputs together. Start bench tests at low source volume and check amplifier and transducer temperature during playback.
-
-### T03 validation boundary
-
-T03 remains **NEXT** until the second amplifier is available and the following checks pass:
-
-- A left-only test signal plays only through the left BCT, and a right-only signal plays only through the right BCT.
-- Both channels play together without dropouts, unexpected noise or channel swapping.
-- Output levels remain unclipped at the intended listening range, with no abnormal heating during the bench test.
-
-The current [audio-path diagram](images/diagrams/ossis-audio-path.svg) and [wiring diagram](images/diagrams/ossis-wiring.svg) document the **verified shared-amplifier setup**. They are intentionally retained as mono-test diagrams; they do not yet represent the proposed two-amplifier stereo wiring.
+[Development log](docs/development-log.md) · [Test results](docs/test-results.md) · [Bench setup](docs/test-setup.md)
