@@ -105,3 +105,60 @@ images/                             Diagrams, visual assets and test evidence
 | --- | --- | --- |
 | **T03: Stereo playback** | Next | Obtain the second amplifier, configure independent left/right channels and test two BCTs |
 | **CAD design** | In progress | Continue mechanical design alongside audio testing; no design files are included in this revision |
+
+## T03: Stereo DSP development candidate
+
+We have drafted a separate stereo playback pipeline for the next hardware test. This is a **development candidate, not a verified build**. The current [main firmware](code/ossis/main/main.ino) remains the tested **T02 Bluetooth + OTA** version until stereo playback is validated.
+
+The proposed pipeline keeps the left and right audio channels independent:
+
+```text
+Bluetooth A2DP (44.1 kHz, 16-bit, stereo)
+                  |
+          ESP32-WROOM-32
+                  |
+       One FilteredStream pipeline
+          /                 \
+   Left DSP chain       Right DSP chain
+          \                 /
+             Stereo I²S
+                  |
+       Shared BCLK / WS / DIN
+             /          \
+      MAX98357A        MAX98357A
+       Left only        Right only
+          |                |
+       Left BCT         Right BCT
+```
+
+### Proposed stereo DSP settings
+
+| DSP stage | Candidate setting | Purpose |
+| --- | --- | --- |
+| Pre-gain | −4.5 dB | Create headroom before EQ boosts |
+| High-pass | 180 Hz, Q = 0.7071 | Attenuate low-frequency content |
+| Peaking EQ | 2.8 kHz, +4 dB, 0.8-octave bandwidth | Emphasize the presence region |
+| High shelf | 5.5 kHz, +2.5 dB, slope = 1.0 | Adjust high-frequency balance |
+| Output limiter | Soft-knee above 90% PCM full scale, followed by a signed 16-bit clamp | Reduce harsh clipping and prevent output wraparound |
+
+The candidate uses separate filter state for each channel and keeps the filter stages in a single floating-point processing chain. Its proposed I²S configuration is **44.1 kHz, 16-bit, two channels**, with the ESP32 APLL requested and DMA buffers configured at 512 samples × 10.
+
+These are firmware settings, not measured acoustic results. The EQ values and limiter still need listening tests and level checks with the actual transducers.
+
+### Stereo amplifier wiring note
+
+Both MAX98357A modules receive the same I²S **BCLK, WS/LRCLK and DIN** signals. Their channel-selection pins must be configured differently: one amplifier selects the left channel and the other selects the right channel. This is a hardware SD_MODE/MODE configuration; the candidate sketch does not set it in software.
+
+Check the exact breakout-board circuit before changing its SD/MODE connection. The MAX98357A datasheet specifies a direct logic-high selection for left and a VDDIO-dependent pull-up resistor for right; its example value for 3.3 V VDDIO is approximately **210 kΩ**. Do not assume every breakout exposes the bare chip pin in the same way. See the [MAX98357A/MAX98357B datasheet, SD_MODE channel selection](https://cdn-shop.adafruit.com/product-files/3006/MAX98357A-MAX98357B.pdf).
+
+For independent stereo, use one BCT on each amplifier's own speaker output. Do not connect the two amplifiers' speaker outputs together. Start bench tests at low source volume and check amplifier and transducer temperature during playback.
+
+### T03 validation boundary
+
+T03 remains **NEXT** until the second amplifier is available and the following checks pass:
+
+- A left-only test signal plays only through the left BCT, and a right-only signal plays only through the right BCT.
+- Both channels play together without dropouts, unexpected noise or channel swapping.
+- Output levels remain unclipped at the intended listening range, with no abnormal heating during the bench test.
+
+The current [audio-path diagram](images/diagrams/ossis-audio-path.svg) and [wiring diagram](images/diagrams/ossis-wiring.svg) document the **verified shared-amplifier setup**. They are intentionally retained as mono-test diagrams; they do not yet represent the proposed two-amplifier stereo wiring.
