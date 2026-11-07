@@ -229,8 +229,6 @@ We verified independent channel playback using stereo test audio.
 
 [T03 test sketch](code/ossis/tests/T03_independent_stereo/T03_independent_stereo.ino) · [T03 test procedure](code/ossis/tests/T03_independent_stereo/README.md) · [T03 test record](docs/test-results.md#t03-independent-stereo-playback)
 
-> [!NOTE]
-> T03 is now the current main firmware. The T02 OTA functionality remains available in its separate test sketch and has not yet been integrated into the current stereo firmware.
 
 ## Bill of Materials
 
